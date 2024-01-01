@@ -1,5 +1,8 @@
 # Project specific
 Releases
+config.sh
+config.rb
+config.txt
 .config/*
 config/*
 !config/dafault/*
