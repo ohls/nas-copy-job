@@ -2,7 +2,8 @@
 Releases
 .config/*
 config/*
-!.config/dafault/*
+!config/dafault/*
+!config/example/*
 */secret.h
 secret.h
 !/ESP32/rainer/example/secret.h
