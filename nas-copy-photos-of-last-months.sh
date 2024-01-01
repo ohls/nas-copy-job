@@ -32,20 +32,39 @@ echo ""
 #    Debug info: --dry-run (n) in -axprvn # -v is verbose (a lot of output)
 if [ "$DRYRUN" = true ] ; then
   rsync_options="-axprvn --delete"
-  echo "***  Begin rsync copy photos with flags $rsync_options ***"
+  echo "*** Begin rsync copy photos with flags $rsync_options ***"
 else
   rsync_options="-axpr --delete"
-  echo "***  Begin rsync copy photos with flags $rsync_options ***"
+  echo "*** Begin rsync copy photos with flags $rsync_options ***"
 fi
 
-find "$PHOTO_SOURCE_PATH" -type f \( -name '*.jpg' -o -name '*.JPG' \) -mtime -"$DAYS_WHEN_PHOTO_TARGET_PATH_IS_OLD" -printf %P\\0| eval rsync "$rsync_options" --files-from=- --from0 "$PHOTO_SOURCE_PATH $PHOTO_TARGET_PATH"
+find "$PHOTO_SOURCE_PATH" -type f \( -name '*.jpg' -o -name '*.JPG' \) -mtime -"$DAYS_WHEN_PHOTO_IS_OLD" -printf %P\\0| eval rsync "$rsync_options" --files-from=- --from0 "$PHOTO_SOURCE_PATH $PHOTO_TARGET_PATH"
 echo ""
 
 # delete files in PHOTO_TARGET_PATH that are older than DAYS_WHEN_PHOTO_TARGET_PATH_IS_OLD days
 # ^^^^^^^^^^^^   this is tested, but dangerous
 if [ "$DRYRUN" = true ] ; then
-  echo "*** Dry-run: Delete photos in PHOTO_TARGET_PATH older than $DAYS_WHEN_PHOTO_TARGET_PATH_IS_OLD days ***"
+  echo "*** Dry-run: Delete photos in PHOTO_TARGET_PATH older than $DAYS_WHEN_PHOTO_IS_OLD days ***"
 else
-  echo "*** Delete photos in PHOTO_TARGET_PATH older than $DAYS_WHEN_PHOTO_TARGET_PATH_IS_OLD days ***"
-  find "$PHOTO_TARGET_PATH" -type f -mtime +"$DAYS_WHEN_PHOTO_TARGET_PATH_IS_OLD" -exec rm -f {} \;
+  echo "*** Delete photos in PHOTO_TARGET_PATH older than $DAYS_WHEN_PHOTO_IS_OLD days ***"
+  find "$PHOTO_TARGET_PATH" -type f -mtime +"$DAYS_WHEN_PHOTO_IS_OLD" -exec rm -f {} \;
 fi
+echo ""
+
+
+YEAR_NOW=$(date +"%Y")
+YEARS_AGO=$((YEAR_NOW-5))
+echo "This year is $YEAR_NOW"
+echo "Years ago was $YEARS_AGO"
+
+for user in ${USERS[@]}; do
+  echo "* Sort $user's photos from Internal Memory to SD-Card (in its sync on NAS)"
+
+    for (( y=YEARS_AGO; y<=YEAR_NOW; y++ ))
+    do
+      echo "*   Begin rsync move photos of $y"
+      echo "*     from $user/$INTERNAL_MEMORY_DCIM_CAMERA_ON_NAS"
+      echo "*     to   $user/$SD_CARD_DCIM_CAMERA_ON_NAS/$y"
+    done
+
+done
