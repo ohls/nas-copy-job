@@ -12,4 +12,4 @@ get a local copy of recent photos on each personal computer.
 1. deletes photos in the home folder of the user to keep only the recent photos as local copy
 
 # Credits
-Thanks to teh people of [rsync](https://rsync.samba.org/). I love it!
+Thanks to the people of [rsync](https://rsync.samba.org/). I love it!
