@@ -17,12 +17,12 @@ DRYRUN=true
 #   Recommended to use a "Team Folder" of Synology Drive to sync with multiple user PCs
 
 # Automated copy of photos will be done of photos that are newer than DAYS_WHEN_PHOTO_IS_OLD in days
-DAYS_WHEN_PHOTO_IS_OLD=400
+DAYS_WHEN_PHOTO_IS_OLD=425
 
-#   Path to the source folder to generate automated copies of photos (no trailing slash/)
+# Path to the source folder to generate automated copies of photos (no trailing slash/)
 PHOTO_SOURCE_PATH="/volume1/Test/Source/Photos"
 
-#   Path to the target folder to receive automated copies of photos (no trailing slash/)
+# Path to the target folder to receive automated copies of photos (no trailing slash/)
 PHOTO_TARGET_PATH="/volume1/Test/Target/Automated-Copies/photos-recent-of-months"
 
 
@@ -33,7 +33,7 @@ PHOTO_TARGET_PATH="/volume1/Test/Target/Automated-Copies/photos-recent-of-months
 DAYS_TO_DELAY_MOBILE_PHOTOS=14
 
 # List of usernames where photos shall be moved from Internal-Memory to SD-Card
-USERS=("Tim" "Jill")
+SORT_USERS=("Tim" "Jill")
 
 # Path to the root of the homes folder of Synology NAS (no trailing slash/)
 HOMES_PATH="/volume1/Test/homes"
@@ -47,3 +47,21 @@ INTERNAL_MEMORY_DCIM_CAMERA_ON_NAS_FOLDER="Handy-Sync/Internal-Memory/DCIM/Camer
 
 # SD-Card Folder (not path), synced folder of smart phone on NAS
 SD_CARD_DCIM_CAMERA_ON_NAS_FOLDER="Handy-Sync/SD-Card/DCIM/Camera"
+
+
+
+# Archive photos from smart-phone SD-Card --------------------------------------------------------------------------
+#   Photos older than BACKUP_PHOTOS_OLDER_THAN_DAYS days will be moved to the PHOTO_ARCHIVE_TARGET_PATH folder
+
+# List of usernames thats photos shall be archived
+ARCHIVE_USERS=("Tim")
+
+# Photos older than BACKUP_PHOTOS_OLDER_THAN_DAYS days will be archived
+BACKUP_PHOTOS_OLDER_THAN_DAYS=395
+
+# Source folder from where photos shall be archived from is the SD-Card of the user
+# following this patter: "$HOMES_PATH/$user/$SD_CARD_DCIM_CAMERA_ON_NAS_FOLDER"
+
+# Target folder to archive the photos
+#   Variables from above are possible to, like $PHOTO_SOURCE_PATH
+PHOTO_ARCHIVE_TARGET_PATH=$PHOTO_SOURCE_PATH

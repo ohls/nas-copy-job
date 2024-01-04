@@ -75,7 +75,7 @@ else
 fi
 echo ""
 
-echo "***  Move and sort smart-phone photos  **************************************************************************"
+echo "*** Move and sort smart-phone photos  ***************************************************************************"
 echo "*****************************************************************************************************************"
 # Sort and clean Smart Phone Camera photos -----------------------------------------------------------------------------
 #   On the NAS folder that represent the synced/uploaded data from smart-phone
@@ -97,11 +97,11 @@ if [ "$DRYRUN" = true ] ; then
   rsync_options="-axprvn --remove-source-files"
 else
   # do not use --delete option here, because it is a move it may create data loss
-  rsync_options="-axpr --remove-source-files"
+  rsync_options="-axprv --remove-source-files"
 fi
 
 
-for user in ${USERS[@]}; do
+for user in ${SORT_USERS[@]}; do
   echo "* Sort $user's photos from Internal Memory to SD-Card into a yearly sub-folder (on its sync on NAS)"
   echo "*   rsync options $rsync_options"
 
@@ -127,10 +127,41 @@ for user in ${USERS[@]}; do
 
     find "$source_path" -type f \( -name '*.jpg' -o -name '*.JPG' \) -newermt "$first_day_in_year" ! -newermt "$last_day_in_year" -printf %P\\0| eval rsync "$rsync_options" --files-from=- --from0 "$source_path $target_path"
 
+    #TODO: Recursively remove empty folders from source
+
   done
 
   echo "*"
   echo "*"
+
+done
+
+echo ""
+echo "***  archive photos from smart-phone ****************************************************************************"
+echo "*****************************************************************************************************************"
+
+if [ "$DRYRUN" = true ] ; then
+  rsync_options="-axprvn --remove-source-files"
+else
+  # do not use --delete option here, because it is a move it may create data loss
+  rsync_options="-axprv --remove-source-files"
+fi
+
+date_to_start_archiving=$(date --date="$DAYS_TO_DELAY_MOBILE_PHOTOS days ago" '+%Y-%m-%d 00:00:00')
+
+for user in ${ARCHIVE_USERS[@]}; do
+  source_path="$HOMES_PATH/$user/$SD_CARD_DCIM_CAMERA_ON_NAS_FOLDER"
+
+  echo ""
+  echo "*** Archiving $user's photos older than $date_to_start_archiving"
+  echo "*     with rsync flags $rsync_options"
+  echo "*     from $source_path"
+  echo "*     to $PHOTO_ARCHIVE_TARGET_PATH"
+
+
+  find "$source_path" -type f \( -name '*.jpg' -o -name '*.JPG' \) ! -newermt "$date_to_start_archiving" -printf %P\\0| eval rsync "$rsync_options" --files-from=- --from0 "$source_path $PHOTO_ARCHIVE_TARGET_PATH"
+
+  #TODO: Recursively remove empty folders from source
 
 done
 
