@@ -23,7 +23,7 @@ DAYS_WHEN_PHOTO_IS_OLD=425
 PHOTO_SOURCE_PATH="/volume1/Test/Source/Photos"
 
 # Path to the target folder to receive automated copies of photos (no trailing slash/)
-PHOTO_TARGET_PATH="/volume1/Test/Target/Automated-Copies/photos-recent-of-months"
+PHOTO_TARGET_PATH="/volume1/Test/Target/Automated-Copies/photos-of-recent-months"
 
 
 

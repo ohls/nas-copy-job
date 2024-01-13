@@ -127,7 +127,16 @@ for user in ${SORT_USERS[@]}; do
 
     find "$source_path" -type f \( -name '*.jpg' -o -name '*.JPG' \) -newermt "$first_day_in_year" ! -newermt "$last_day_in_year" -printf %P\\0| eval rsync "$rsync_options" --files-from=- --from0 "$source_path $target_path"
 
-    #TODO: Recursively remove empty folders from source
+    echo ""
+    echo "*** Delete empty folders in $source_path"
+    find $source_path -type d -empty -print
+
+    if [ "$DRYRUN" = false ] ; then
+      # Delete all empty folder in the source; the SD-Card
+      # ^^^^^^
+      find $source_path -type d -empty -delete
+    fi
+
 
   done
 
@@ -153,7 +162,7 @@ for user in ${ARCHIVE_USERS[@]}; do
   source_path="$HOMES_PATH/$user/$SD_CARD_DCIM_CAMERA_ON_NAS_FOLDER"
 
   echo ""
-  echo "*** Archiving $user's photos older than $date_to_start_archiving"
+  echo "*** Archive $user's photos older than $date_to_start_archiving"
   echo "*     with rsync flags $rsync_options"
   echo "*     from $source_path"
   echo "*     to $PHOTO_ARCHIVE_TARGET_PATH"
@@ -161,7 +170,15 @@ for user in ${ARCHIVE_USERS[@]}; do
 
   find "$source_path" -type f \( -name '*.jpg' -o -name '*.JPG' \) ! -newermt "$date_to_start_archiving" -printf %P\\0| eval rsync "$rsync_options" --files-from=- --from0 "$source_path $PHOTO_ARCHIVE_TARGET_PATH"
 
-  #TODO: Recursively remove empty folders from source
+  echo ""
+  echo "*** Delete empty folders in $source_path"
+  find $source_path -type d -empty -print
+
+  if [ "$DRYRUN" = false ] ; then
+    # Delete all empty folder in the source; the SD-Card
+    # ^^^^^^
+    find $source_path -type d -empty -delete
+  fi
 
 done
 
