@@ -68,9 +68,9 @@ echo ""
 # delete files in PHOTO_TARGET_PATH that are older than DAYS_WHEN_PHOTO_TARGET_PATH_IS_OLD days
 # ^^^^^^^^^^^^   this is tested, but dangerous
 if [ "$DRYRUN" = true ] ; then
-  echo "*** Dry-run: Delete photos in PHOTO_TARGET_PATH older than $DAYS_WHEN_PHOTO_IS_OLD days"
+  echo "*** Dry-run: Delete photos in '$PHOTO_TARGET_PATH' older than $DAYS_WHEN_PHOTO_IS_OLD days"
 else
-  echo "*** Delete photos in PHOTO_TARGET_PATH older than $DAYS_WHEN_PHOTO_IS_OLD days"
+  echo "*** Delete photos in '$PHOTO_TARGET_PATH' older than $DAYS_WHEN_PHOTO_IS_OLD days"
   find "$PHOTO_TARGET_PATH" -type f -mtime +"$DAYS_WHEN_PHOTO_IS_OLD" -exec rm -f {} \;
 fi
 echo ""
@@ -116,19 +116,21 @@ for user in ${SORT_USERS[@]}; do
     fi
     echo "*"
     echo "*   $y: Move photos modified between $first_day_in_year and $last_day_in_year"
-    echo "*     from $source_path"
-    echo "*     to   $target_path"
+    echo "*     from '$source_path'"
+    echo "*     to   '$target_path'"
 
     # important to create the target folder if it doesn't exist.
     #   Otherwise rsync will take it as target file name and move all photos to the same file
     #   overwriting them and only the last photo remains with year as filename.
     #   DANGEROUS!!! In this case all photos (but the last per year) get deleted
-    mkdir -p $target_path
+    if [ "$DRYRUN" = false ] ; then
+      mkdir -p $target_path
+    fi
 
     find "$source_path" -type f \( -name '*.jpg' -o -name '*.JPG' \) -newermt "$first_day_in_year" ! -newermt "$last_day_in_year" -printf %P\\0| eval rsync "$rsync_options" --files-from=- --from0 "$source_path $target_path"
 
     echo ""
-    echo "*** Delete empty folders in $source_path"
+    echo "*** Delete empty folders in '$source_path'"
     find $source_path -type d -empty -print
 
     if [ "$DRYRUN" = false ] ; then
@@ -156,7 +158,7 @@ else
   rsync_options="-axprv --remove-source-files"
 fi
 
-date_to_start_archiving=$(date --date="$DAYS_TO_DELAY_MOBILE_PHOTOS days ago" '+%Y-%m-%d 00:00:00')
+date_to_start_archiving=$(date --date="$BACKUP_PHOTOS_OLDER_THAN_DAYS days ago" '+%Y-%m-%d 00:00:00')
 
 for user in ${ARCHIVE_USERS[@]}; do
   source_path="$HOMES_PATH/$user/$SD_CARD_DCIM_CAMERA_ON_NAS_FOLDER"
@@ -164,14 +166,14 @@ for user in ${ARCHIVE_USERS[@]}; do
   echo ""
   echo "*** Archive $user's photos older than $date_to_start_archiving"
   echo "*     with rsync flags $rsync_options"
-  echo "*     from $source_path"
-  echo "*     to $PHOTO_ARCHIVE_TARGET_PATH"
+  echo "*     from '$source_path'"
+  echo "*     to '$PHOTO_ARCHIVE_TARGET_PATH'"
 
 
   find "$source_path" -type f \( -name '*.jpg' -o -name '*.JPG' \) ! -newermt "$date_to_start_archiving" -printf %P\\0| eval rsync "$rsync_options" --files-from=- --from0 "$source_path $PHOTO_ARCHIVE_TARGET_PATH"
 
   echo ""
-  echo "*** Delete empty folders in $source_path"
+  echo "*** Delete empty folders in '$source_path'"
   find $source_path -type d -empty -print
 
   if [ "$DRYRUN" = false ] ; then
